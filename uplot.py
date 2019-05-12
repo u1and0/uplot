@@ -47,15 +47,20 @@ def data_graph(df, filename):
         go.Scatter(
             x=df.index,
             y=df.T.values[_i],
+            name=df.columns[_i],
         ) for _i in range(len(df.columns))
     ]
     basename = os.path.splitext(filename)[0]
+    if '_' in basename:
+        title, yaxis_name = basename.split('_', 1)
+    else:
+        title, yaxis_name = basename, basename
     layout = go.Layout(xaxis={
         'type': 'linear',
         'title': df.index.name
     },
-                       title=go.layout.Title(text=basename),
-                       yaxis={'title': df.columns[0]},
+                       title=go.layout.Title(text=title),
+                       yaxis={'title': yaxis_name},
                        margin={
                            'l': 40,
                            'b': 50
@@ -81,7 +86,7 @@ def parse_contents(contents, filename, date):
             df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), index_col=0)
         elif 'xls' in filename:
             # Assume that the user uploaded an excel file
-            df = pd.read_excel(io.BytesIO(decoded))
+            df = pd.read_excel(io.BytesIO(decoded), index_col=0)
     except Exception as e:
         print(e)
         return html.Div(['There was an error processing this file.'])

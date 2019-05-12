@@ -2,6 +2,7 @@
 import base64
 import datetime
 import io
+import os
 
 import dash
 from dash.dependencies import Input, Output, State
@@ -39,18 +40,21 @@ app.layout = html.Div([
 ])
 
 
-def plot_graph(df, filename):
+def data_graph(df, filename):
+    """アップロードされたデータのグラフを描画"""
     data = [
+        # 列の数だけトレース
         go.Scatter(
             x=df.index,
-            y=df.T.values[_],
-        ) for _ in range(len(df.columns))
+            y=df.T.values[_i],
+        ) for _i in range(len(df.columns))
     ]
+    basename = os.path.splitext(filename)[0]
     layout = go.Layout(xaxis={
         'type': 'linear',
         'title': df.index.name
     },
-                       title=go.layout.Title(text=filename),
+                       title=go.layout.Title(text=basename),
                        yaxis={'title': df.columns[0]},
                        margin={
                            'l': 40,
@@ -58,6 +62,13 @@ def plot_graph(df, filename):
                        },
                        hovermode='closest')
     return dcc.Graph(id='the_graph', figure={'data': data, 'layout': layout})
+
+
+def data_table(df):
+    """アップロードされたデータの表を描画"""
+    data = df.to_dict('records')
+    columns = [{'name': _i, 'id': _i} for _i in df.columns]
+    return dash_table.DataTable(data=data, columns=columns)
 
 
 def parse_contents(contents, filename, date):
@@ -71,24 +82,15 @@ def parse_contents(contents, filename, date):
         elif 'xls' in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(io.BytesIO(decoded))
-        # dft = df.T
-        print(df.index)
-        print(df.T.values[0])
     except Exception as e:
         print(e)
         return html.Div(['There was an error processing this file.'])
 
     return html.Div([
-        # Plot graph
-        plot_graph(df, filename),
-        # ---graph ^
+        data_graph(df, filename),
         html.H5(filename),
         html.H6(datetime.datetime.fromtimestamp(date)),
-        dash_table.DataTable(data=df.to_dict('records'),
-                             columns=[{
-                                 'name': i,
-                                 'id': i
-                             } for i in df.columns]),
+        data_table(df),
         html.Hr(),  # horizontal line
 
         # For debugging, display the raw contents provided by the web browser

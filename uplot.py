@@ -45,10 +45,10 @@ def data_graph(df, filename):
     data = [
         # 列の数だけトレース
         go.Scatter(
-            x=df.index,
-            y=df.T.values[_i],
+            x=df.iloc[:, 0],
+            y=df.iloc[:, _i],
             name=df.columns[_i],
-        ) for _i in range(len(df.columns))
+        ) for _i in range(1, len(df.columns))
     ]
     basename = os.path.splitext(filename)[0]
     if '_' in basename:
@@ -57,7 +57,7 @@ def data_graph(df, filename):
         title, yaxis_name = basename, basename
     layout = go.Layout(xaxis={
         'type': 'linear',
-        'title': df.index.name
+        'title': df.columns[0]
     },
                        title=go.layout.Title(text=title),
                        yaxis={'title': yaxis_name},
@@ -83,10 +83,10 @@ def parse_contents(contents, filename, date):
     try:
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), index_col=0)
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
         elif 'xls' in filename:
             # Assume that the user uploaded an excel file
-            df = pd.read_excel(io.BytesIO(decoded), index_col=0)
+            df = pd.read_excel(io.BytesIO(decoded))
     except Exception as e:
         print(e)
         return html.Div(['There was an error processing this file.'])

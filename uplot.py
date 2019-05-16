@@ -36,6 +36,29 @@ app.layout = html.Div(
             },
             # Allow multiple files to be uploaded
             multiple=True),
+        html.H6('chart-type'),
+        dcc.Dropdown(id='chart-type',
+                     options=[{
+                         'label': i,
+                         'value': i
+                     } for i in ['line', 'polar']],
+                     value='line'),
+        html.H6('x-axis'),
+        dcc.RadioItems(id='xaxis-type',
+                       options=[{
+                           'label': i,
+                           'value': i
+                       } for i in ['Linear', 'Log']],
+                       value='Linear',
+                       labelStyle={'display': 'inline-block'}),
+        html.H6('y-axis'),
+        dcc.RadioItems(id='yaxis-type',
+                       options=[{
+                           'label': i,
+                           'value': i
+                       } for i in ['Linear', 'Log']],
+                       value='Linear',
+                       labelStyle={'display': 'inline-block'}),
         html.Div(id='the_graph'),
         html.Div(id='output-data-upload'),
     ], )
@@ -86,7 +109,7 @@ def data_table(df):
     return dash_table.DataTable(data=data, columns=columns)
 
 
-def parse_contents(contents, filename, date):
+def parse_contents(contents, filename, date, xaxis_type, yaxis_type):
     content_type, content_string = contents.split(',')
 
     decoded = base64.b64decode(content_string)
@@ -102,37 +125,7 @@ def parse_contents(contents, filename, date):
         return html.Div(['There was an error processing this file.'])
 
     return html.Div([
-        html.Div([
-            html.H6('chart-type'),
-            dcc.Dropdown(id='yaxis-column',
-                         options=[{
-                             'label': i,
-                             'value': i
-                         } for i in ['line', 'polar']],
-                         value='Life expectancy at birth, total (years)'),
-            html.H6('x-axis'),
-            dcc.RadioItems(id='xaxis-type',
-                           options=[{
-                               'label': i,
-                               'value': i
-                           } for i in ['Linear', 'Log']],
-                           value='Linear',
-                           labelStyle={'display': 'inline-block'}),
-            html.H6('y-axis'),
-            dcc.RadioItems(id='yaxis-type',
-                           options=[{
-                               'label': i,
-                               'value': i
-                           } for i in ['Linear', 'Log']],
-                           value='Linear',
-                           labelStyle={'display': 'inline-block'}),
-        ],
-                 style={
-                     'width': '48%',
-                     'float': 'right',
-                     'display': 'inline-block'
-                 }),
-        data_graph(df, filename),
+        data_graph(df, filename, xaxis_type, yaxis_type),
         html.H5(filename),
         html.H6(datetime.datetime.fromtimestamp(date)),
         data_table(df),
@@ -148,17 +141,20 @@ def parse_contents(contents, filename, date):
     ])
 
 
-@app.callback(
-    Output(
-        'output-data-upload',
-        'children',
-    ), [Input('upload-data', 'contents')],
-    [State('upload-data', 'filename'),
-     State('upload-data', 'last_modified')])
-def update_output(list_of_contents, list_of_names, list_of_dates):
+@app.callback(Output(
+    'output-data-upload',
+    'children',
+), [
+    Input('upload-data', 'contents'),
+    Input('xaxis-type', 'value'),
+    Input('yaxis-type', 'value'),
+], [State('upload-data', 'filename'),
+    State('upload-data', 'last_modified')])
+def update_output(list_of_contents, xaxis_type, yaxis_type, list_of_names,
+                  list_of_dates):
     if list_of_contents is not None:
         children = [
-            parse_contents(c, n, d)
+            parse_contents(c, n, d, xaxis_type, yaxis_type)
             for c, n, d in zip(list_of_contents, list_of_names, list_of_dates)
         ]
         return children

@@ -17,30 +17,36 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-app.layout = html.Div([
-    # File upload bunner
-    dcc.Upload(
-        id='upload-data',
-        children=html.Div(['Drag and Drop or ',
-                           html.A('Select Files')]),
-        style={
-            'width': '100%',
-            'height': '60px',
-            'lineHeight': '60px',
-            'borderWidth': '1px',
-            'borderStyle': 'dashed',
-            'borderRadius': '5px',
-            'textAlign': 'center',
-            'margin': '10px'
-        },
-        # Allow multiple files to be uploaded
-        multiple=True),
-    html.Div(id='the_graph'),
-    html.Div(id='output-data-upload'),
-])
+app.layout = html.Div(
+    [
+        # File upload bunner
+        dcc.Upload(
+            id='upload-data',
+            children=html.Div(['Drag and Drop or ',
+                               html.A('Select Files')]),
+            style={
+                'width': '100%',
+                'height': '60px',
+                'lineHeight': '60px',
+                'borderWidth': '1px',
+                'borderStyle': 'dashed',
+                'borderRadius': '5px',
+                'textAlign': 'center',
+                'margin': '10px'
+            },
+            # Allow multiple files to be uploaded
+            multiple=True),
+        html.Div(id='the_graph'),
+        html.Div(id='output-data-upload'),
+    ], )
 
 
-def data_graph(df, filename):
+def data_graph(
+        df,
+        filename,
+        xaxis_type='Linear',
+        yaxis_type='Linear',
+):
     """アップロードされたデータのグラフを描画"""
     data = [
         # 列の数だけトレース
@@ -56,11 +62,15 @@ def data_graph(df, filename):
     else:
         title, yaxis_name = basename, basename
     layout = go.Layout(xaxis={
-        'type': 'linear',
+        'type': 'linear' if xaxis_type == 'Linear' else 'log',
         'title': df.columns[0]
     },
                        title=go.layout.Title(text=title),
-                       yaxis={'title': yaxis_name},
+                       yaxis={
+                           'type':
+                           'linear' if yaxis_type == 'Linear' else 'log',
+                           'title': yaxis_name
+                       },
                        margin={
                            'l': 40,
                            'b': 50
@@ -92,6 +102,36 @@ def parse_contents(contents, filename, date):
         return html.Div(['There was an error processing this file.'])
 
     return html.Div([
+        html.Div([
+            html.H6('chart-type'),
+            dcc.Dropdown(id='yaxis-column',
+                         options=[{
+                             'label': i,
+                             'value': i
+                         } for i in ['line', 'polar']],
+                         value='Life expectancy at birth, total (years)'),
+            html.H6('x-axis'),
+            dcc.RadioItems(id='xaxis-type',
+                           options=[{
+                               'label': i,
+                               'value': i
+                           } for i in ['Linear', 'Log']],
+                           value='Linear',
+                           labelStyle={'display': 'inline-block'}),
+            html.H6('y-axis'),
+            dcc.RadioItems(id='yaxis-type',
+                           options=[{
+                               'label': i,
+                               'value': i
+                           } for i in ['Linear', 'Log']],
+                           value='Linear',
+                           labelStyle={'display': 'inline-block'}),
+        ],
+                 style={
+                     'width': '48%',
+                     'float': 'right',
+                     'display': 'inline-block'
+                 }),
         data_graph(df, filename),
         html.H5(filename),
         html.H6(datetime.datetime.fromtimestamp(date)),

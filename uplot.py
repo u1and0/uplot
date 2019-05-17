@@ -161,4 +161,4 @@ def update_output(list_of_contents, xaxis_type, yaxis_type, list_of_names,
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=8888)
+    app.run_server(debug=True, host='0.0.0.0', port=8880)

@@ -91,12 +91,17 @@ def data_graph(
                 'values': df.iloc[:, i],
                 'name': df.columns[i],
                 'domain': {
-                    'row': i - 1
+                    'column': i - 1
                 }
             }) for i in range(1, len(df.columns))
         ],
-        # 'Polar':
-        # [go.Scatterpolar(args(i)) for i in range(1, len(df.columns))],
+        'Polar': [
+            go.Scatterpolar(
+                r=df.iloc[:, i],
+                theta=df.iloc[:, 0],
+                name=df.columns[i],
+            ) for i in range(1, len(df.columns))
+        ],
     }
     basename = os.path.splitext(filename)[0]
     # ファイル名の1つ目の'_'で区切って、グラフタイトルとY軸名に分ける
@@ -108,28 +113,28 @@ def data_graph(
 
     layout = defaultdict(
         # default layout
-        lambda: go.Layout(xaxis={
-            'type': 'linear' if xaxis_type == 'Linear' else 'log',
-            'title': df.columns[0]
-        },
-                          title=go.layout.Title(text=title),
-                          yaxis={
-                              'type': 'linear'
-                              if yaxis_type == 'Linear' else 'log',
-                              'title': yaxis_name
-                          },
-                          margin={
-                              'l': 40,
-                              'b': 50
-                          },
-                          hovermode='closest'),
+        lambda: go.Layout(
+            title=go.layout.Title(text=title),
+            xaxis={
+                'type': 'linear' if xaxis_type == 'Linear' else 'log',
+                'title': df.columns[0]
+            },
+            yaxis={
+                'type': 'linear' if yaxis_type == 'Linear' else 'log',
+                'title': yaxis_name
+            },
+            margin={
+                'l': 40,
+                'b': 50
+            },
+            hovermode='closest'),
         # other layout
         {
             'Pie':
             go.Layout(title=go.layout.Title(text=title),
                       grid={
-                          'rows': len(df.columns) - 1,
-                          'columns': 1
+                          'columns': len(df.columns) - 1,
+                          'rows': 1
                       },
                       hovermode='closest')
         })

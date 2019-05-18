@@ -42,7 +42,10 @@ app.layout = html.Div(
                      options=[{
                          'label': i,
                          'value': i
-                     } for i in ['Line', 'Bar', 'Histogram', 'Pie', 'Polar']],
+                     } for i in [
+                         'Line', 'Bar', 'Histogram', 'Pie', 'Polar', 'Box',
+                         'Heatmap', 'Candlestick', '3DScatter', '3DSurface'
+                     ]],
                      value='Line'),
         html.H6('x-axis'),
         dcc.RadioItems(id='xaxis-type',
@@ -76,28 +79,29 @@ def data_graph(
 
     def args(i):
         """graph_objs helper func"""
-        return {'x': df.iloc[:, 0], 'y': df[i], 'name': i}
+        return {'x': df.index, 'y': df[i], 'name': i}
 
     # チャートの種類をディクショナリで分岐
     # 内包表記でdfの列の数だけトレース
     data = {
-        'Line': [go.Scatter(args(i)) for i in df.columns[1:]],
-        'Bar': [go.Bar(args(i)) for i in df.columns[1:]],
-        'Histogram': [go.Histogram(args(i)) for i in df.columns[1:]],
+        'Line': [go.Scatter(args(i)) for i in df.columns],
+        'Bar': [go.Bar(args(i)) for i in df.columns],
+        'Histogram': [go.Histogram(args(i)) for i in df.columns],
         'Pie': [
-            go.Pie(labels=df.iloc[:, 0],
+            go.Pie(labels=df.index,
                    values=df[i],
                    name=i,
-                   domain={'column': list(df.columns[1:]).index(i)})
-            for i in df.columns[1:]
+                   domain={'column': list(df.columns).index(i)})
+            for i in df.columns
         ],
         'Polar': [
             go.Scatterpolar(
                 r=df[i],
-                theta=df.iloc[:, 0],
+                theta=df.index,
                 name=i,
-            ) for i in df.columns[1:]
+            ) for i in df.columns
         ],
+        'Heatmap': [go.Heatmap(x=df.index, y=df.columns, z=df.values)],
     }
     basename = os.path.splitext(filename)[0]
     # ファイル名の1つ目の'_'で区切って、グラフタイトルとY軸名に分ける
@@ -114,7 +118,8 @@ def data_graph(
         lambda: go.Layout(title=go.layout.Title(text=title),
                           xaxis={
                               'type': xaxis_type,
-                              'title': df.columns[0]
+                              'title': df.index.name,
+                              'rangeslider': dict(visible=False),
                           },
                           yaxis={
                               'type': yaxis_type,
@@ -144,6 +149,7 @@ def data_graph(
 
 def data_table(df):
     """アップロードされたデータの表を描画"""
+    df.reset_index(inplace=True)  # indexもテーブルに含めるため
     data = df.to_dict('records')
     columns = [{'name': _i, 'id': _i} for _i in df.columns]
     return dash_table.DataTable(data=data, columns=columns)
@@ -157,10 +163,14 @@ def parse_contents(contents, filename, date, chart_type, xaxis_type,
     try:
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')),
+                             index_col=0,
+                             parse_dates=True)
         elif 'xls' in filename:
             # Assume that the user uploaded an excel file
-            df = pd.read_excel(io.BytesIO(decoded))
+            df = pd.read_excel(io.BytesIO(decoded),
+                               index_col=0,
+                               parse_dates=True)
     except Exception as e:
         print(e)
         return html.Div(['There was an error processing this file.'])

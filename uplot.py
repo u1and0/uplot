@@ -3,6 +3,7 @@ import base64
 import datetime
 import io
 import os
+from collections import defaultdict
 
 import dash
 from dash.dependencies import Input, Output, State
@@ -41,8 +42,8 @@ app.layout = html.Div(
                      options=[{
                          'label': i,
                          'value': i
-                     } for i in ['line', 'bar', 'histogram', 'polar']],
-                     value='line'),
+                     } for i in ['Line', 'Bar', 'Histogram', 'Pie', 'Polar']],
+                     value='Line'),
         html.H6('x-axis'),
         dcc.RadioItems(id='xaxis-type',
                        options=[{
@@ -80,10 +81,22 @@ def data_graph(
     # チャートの種類をディクショナリで分岐
     # 内包表記でdfの列の数だけトレース
     data = {
-        'line': [go.Scatter(args(_i)) for _i in range(1, len(df.columns))],
-        'bar': [go.Bar(args(_i)) for _i in range(1, len(df.columns))],
-        'histogram':
-        [go.Histogram(args(_i)) for _i in range(1, len(df.columns))],
+        'Line': [go.Scatter(args(i)) for i in range(1, len(df.columns))],
+        'Bar': [go.Bar(args(i)) for i in range(1, len(df.columns))],
+        'Histogram':
+        [go.Histogram(args(i)) for i in range(1, len(df.columns))],
+        'Pie': [
+            go.Pie({
+                'labels': df.iloc[:, 0],
+                'values': df.iloc[:, i],
+                'name': df.columns[i],
+                'domain': {
+                    'row': i - 1
+                }
+            }) for i in range(1, len(df.columns))
+        ],
+        # 'Polar':
+        # [go.Scatterpolar(args(i)) for i in range(1, len(df.columns))],
     }
     basename = os.path.splitext(filename)[0]
     # ファイル名の1つ目の'_'で区切って、グラフタイトルとY軸名に分ける
@@ -92,25 +105,38 @@ def data_graph(
     # ファイル名に'_'がなければグラフタイトル、Y軸名ともにファイル名
     else:
         title, yaxis_name = basename, basename
-    layout = go.Layout(xaxis={
-        'type': 'linear' if xaxis_type == 'Linear' else 'log',
-        'title': df.columns[0]
-    },
-                       title=go.layout.Title(text=title),
-                       yaxis={
-                           'type':
-                           'linear' if yaxis_type == 'Linear' else 'log',
-                           'title': yaxis_name
-                       },
-                       margin={
-                           'l': 40,
-                           'b': 50
-                       },
-                       hovermode='closest')
+
+    layout = defaultdict(
+        # default layout
+        lambda: go.Layout(xaxis={
+            'type': 'linear' if xaxis_type == 'Linear' else 'log',
+            'title': df.columns[0]
+        },
+                          title=go.layout.Title(text=title),
+                          yaxis={
+                              'type': 'linear'
+                              if yaxis_type == 'Linear' else 'log',
+                              'title': yaxis_name
+                          },
+                          margin={
+                              'l': 40,
+                              'b': 50
+                          },
+                          hovermode='closest'),
+        # other layout
+        {
+            'Pie':
+            go.Layout(title=go.layout.Title(text=title),
+                      grid={
+                          'rows': len(df.columns) - 1,
+                          'columns': 1
+                      },
+                      hovermode='closest')
+        })
     return dcc.Graph(id='the_graph',
                      figure={
                          'data': data[chart_type],
-                         'layout': layout
+                         'layout': layout[chart_type]
                      })
 
 

@@ -41,7 +41,7 @@ app.layout = html.Div(
                      options=[{
                          'label': i,
                          'value': i
-                     } for i in ['line', 'polar']],
+                     } for i in ['line', 'bar', 'histogram', 'polar']],
                      value='line'),
         html.H6('x-axis'),
         dcc.RadioItems(id='xaxis-type',
@@ -67,21 +67,29 @@ app.layout = html.Div(
 def data_graph(
         df,
         filename,
-        xaxis_type='Linear',
-        yaxis_type='Linear',
+        chart_type,
+        xaxis_type,
+        yaxis_type,
 ):
     """アップロードされたデータのグラフを描画"""
-    data = [
-        # 列の数だけトレース
-        go.Scatter(
-            x=df.iloc[:, 0],
-            y=df.iloc[:, _i],
-            name=df.columns[_i],
-        ) for _i in range(1, len(df.columns))
-    ]
+
+    def args(i):
+        """graph_objs helper func"""
+        return {'x': df.iloc[:, 0], 'y': df.iloc[:, i], 'name': df.columns[i]}
+
+    # チャートの種類をディクショナリで分岐
+    # 内包表記でdfの列の数だけトレース
+    data = {
+        'line': [go.Scatter(args(_i)) for _i in range(1, len(df.columns))],
+        'bar': [go.Bar(args(_i)) for _i in range(1, len(df.columns))],
+        'histogram':
+        [go.Histogram(args(_i)) for _i in range(1, len(df.columns))],
+    }
     basename = os.path.splitext(filename)[0]
+    # ファイル名の1つ目の'_'で区切って、グラフタイトルとY軸名に分ける
     if '_' in basename:
         title, yaxis_name = basename.split('_', 1)
+    # ファイル名に'_'がなければグラフタイトル、Y軸名ともにファイル名
     else:
         title, yaxis_name = basename, basename
     layout = go.Layout(xaxis={
@@ -99,7 +107,11 @@ def data_graph(
                            'b': 50
                        },
                        hovermode='closest')
-    return dcc.Graph(id='the_graph', figure={'data': data, 'layout': layout})
+    return dcc.Graph(id='the_graph',
+                     figure={
+                         'data': data[chart_type],
+                         'layout': layout
+                     })
 
 
 def data_table(df):
@@ -109,7 +121,8 @@ def data_table(df):
     return dash_table.DataTable(data=data, columns=columns)
 
 
-def parse_contents(contents, filename, date, xaxis_type, yaxis_type):
+def parse_contents(contents, filename, date, chart_type, xaxis_type,
+                   yaxis_type):
     content_type, content_string = contents.split(',')
 
     decoded = base64.b64decode(content_string)
@@ -125,7 +138,7 @@ def parse_contents(contents, filename, date, xaxis_type, yaxis_type):
         return html.Div(['There was an error processing this file.'])
 
     return html.Div([
-        data_graph(df, filename, xaxis_type, yaxis_type),
+        data_graph(df, filename, chart_type, xaxis_type, yaxis_type),
         html.H5(filename),
         html.H6(datetime.datetime.fromtimestamp(date)),
         data_table(df),
@@ -146,19 +159,20 @@ def parse_contents(contents, filename, date, xaxis_type, yaxis_type):
     'children',
 ), [
     Input('upload-data', 'contents'),
+    Input('chart-type', 'value'),
     Input('xaxis-type', 'value'),
     Input('yaxis-type', 'value'),
 ], [State('upload-data', 'filename'),
     State('upload-data', 'last_modified')])
-def update_output(list_of_contents, xaxis_type, yaxis_type, list_of_names,
-                  list_of_dates):
+def update_output(list_of_contents, chart_type, xaxis_type, yaxis_type,
+                  list_of_names, list_of_dates):
     if list_of_contents is not None:
         children = [
-            parse_contents(c, n, d, xaxis_type, yaxis_type)
+            parse_contents(c, n, d, chart_type, xaxis_type, yaxis_type)
             for c, n, d in zip(list_of_contents, list_of_names, list_of_dates)
         ]
         return children
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=8880)
+    app.run_server(debug=True, host='0.0.0.0', port=8888)

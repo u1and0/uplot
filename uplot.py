@@ -49,16 +49,16 @@ app.layout = html.Div(
                        options=[{
                            'label': i,
                            'value': i
-                       } for i in ['Linear', 'Log']],
-                       value='Linear',
+                       } for i in ['linear', 'log', 'category']],
+                       value='linear',
                        labelStyle={'display': 'inline-block'}),
         html.H6('y-axis'),
         dcc.RadioItems(id='yaxis-type',
                        options=[{
                            'label': i,
                            'value': i
-                       } for i in ['Linear', 'Log']],
-                       value='Linear',
+                       } for i in ['linear', 'log', 'category']],
+                       value='linear',
                        labelStyle={'display': 'inline-block'}),
         html.Div(id='the_graph'),
         html.Div(id='output-data-upload'),
@@ -111,21 +111,20 @@ def data_graph(
     # 分岐にはdefaultdictを使い、デフォルトはlambda式で返す
     layout = defaultdict(
         # default layout
-        lambda: go.Layout(
-            title=go.layout.Title(text=title),
-            xaxis={
-                'type': 'linear' if xaxis_type == 'Linear' else 'log',
-                'title': df.columns[0]
-            },
-            yaxis={
-                'type': 'linear' if yaxis_type == 'Linear' else 'log',
-                'title': yaxis_name
-            },
-            margin={
-                'l': 40,
-                'b': 50
-            },
-            hovermode='closest'),
+        lambda: go.Layout(title=go.layout.Title(text=title),
+                          xaxis={
+                              'type': xaxis_type,
+                              'title': df.columns[0]
+                          },
+                          yaxis={
+                              'type': yaxis_type,
+                              'title': yaxis_name,
+                          },
+                          margin={
+                              'l': 40,
+                              'b': 50
+                          },
+                          hovermode='closest'),
         # other layout
         {
             'Pie':

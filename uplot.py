@@ -102,6 +102,7 @@ def data_graph(
             ) for i in df.columns
         ],
         'Heatmap': [go.Heatmap(x=df.index, y=df.columns, z=df.values)],
+        'Box': [go.Box(y=df[i], name=i) for i in df.columns],
     }
     basename = os.path.splitext(filename)[0]
     # ファイル名の1つ目の'_'で区切って、グラフタイトルとY軸名に分ける

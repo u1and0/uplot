@@ -85,14 +85,11 @@ def data_graph(
         'Bar': [go.Bar(args(i)) for i in df.columns[1:]],
         'Histogram': [go.Histogram(args(i)) for i in df.columns[1:]],
         'Pie': [
-            go.Pie({
-                'labels': df.iloc[:, 0],
-                'values': df.iloc[:, i],
-                'name': df.columns[i],
-                'domain': {
-                    'column': i - 1
-                }
-            }) for i in range(1, len(df.columns))
+            go.Pie(labels=df.iloc[:, 0],
+                   values=df[i],
+                   name=i,
+                   domain={'column': list(df.columns[1:]).index(i)})
+            for i in df.columns[1:]
         ],
         'Polar': [
             go.Scatterpolar(
@@ -110,6 +107,8 @@ def data_graph(
     else:
         title, yaxis_name = basename, basename
 
+    # チャートの種類でレイアウトを分岐
+    # 分岐にはdefaultdictを使い、デフォルトはlambda式で返す
     layout = defaultdict(
         # default layout
         lambda: go.Layout(

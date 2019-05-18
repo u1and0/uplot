@@ -76,15 +76,14 @@ def data_graph(
 
     def args(i):
         """graph_objs helper func"""
-        return {'x': df.iloc[:, 0], 'y': df.iloc[:, i], 'name': df.columns[i]}
+        return {'x': df.iloc[:, 0], 'y': df[i], 'name': i}
 
     # チャートの種類をディクショナリで分岐
     # 内包表記でdfの列の数だけトレース
     data = {
-        'Line': [go.Scatter(args(i)) for i in range(1, len(df.columns))],
-        'Bar': [go.Bar(args(i)) for i in range(1, len(df.columns))],
-        'Histogram':
-        [go.Histogram(args(i)) for i in range(1, len(df.columns))],
+        'Line': [go.Scatter(args(i)) for i in df.columns[1:]],
+        'Bar': [go.Bar(args(i)) for i in df.columns[1:]],
+        'Histogram': [go.Histogram(args(i)) for i in df.columns[1:]],
         'Pie': [
             go.Pie({
                 'labels': df.iloc[:, 0],
@@ -97,10 +96,10 @@ def data_graph(
         ],
         'Polar': [
             go.Scatterpolar(
-                r=df.iloc[:, i],
+                r=df[i],
                 theta=df.iloc[:, 0],
-                name=df.columns[i],
-            ) for i in range(1, len(df.columns))
+                name=i,
+            ) for i in df.columns[1:]
         ],
     }
     basename = os.path.splitext(filename)[0]

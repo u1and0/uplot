@@ -1,0 +1,21 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	0.0.0	/45968eff/
+CHART_LIST	uplot.py	/^CHART_LIST = [$/;"	v
+app	uplot.py	/^app = dash.Dash(__name__, external_stylesheets=external_stylesheets)$/;"	v
+args	uplot.py	/^    def args(i):$/;"	f	function:data_graph	file:
+data_graph	uplot.py	/^def data_graph(df, filename, chart_type, xaxis_type, yaxis_type, data_slider):$/;"	f
+data_slider	uplot.py	/^def data_slider(df):$/;"	f
+data_table	uplot.py	/^def data_table(df):$/;"	f
+dcc	uplot.py	/^import dash_core_components as dcc$/;"	I
+external_stylesheets	uplot.py	/^external_stylesheets = ['https:\/\/codepen.io\/chriddyp\/pen\/bWLwgP.css']$/;"	v
+go	uplot.py	/^import plotly.graph_objs as go$/;"	I
+html	uplot.py	/^import dash_html_components as html$/;"	I
+np	uplot.py	/^import numpy as np$/;"	I
+parse_contents	uplot.py	/^def parse_contents(contents, filename, date, chart_type, xaxis_type,$/;"	f
+pd	uplot.py	/^import pandas as pd$/;"	I
+update_output	uplot.py	/^def update_output(list_of_contents, chart_type, xaxis_type, yaxis_type,$/;"	f

@@ -28,8 +28,9 @@ CHART_LIST = [
     'Heatmap',
     # 'Contour',
     'Candlestick',
-    'Scatter3D',
-    'Surface3D',
+    '3D Scatter',
+    '3D Surface',
+    '2D Histogram',
 ]
 CHART_LIST.sort()
 
@@ -106,7 +107,8 @@ def data_graph(
     data = {
         'Line': [go.Scatter(args(i)) for i in df.columns],
         'Bar': [go.Bar(args(i)) for i in df.columns],
-        'Histogram': [go.Histogram(args(i)) for i in df.columns],
+        'Histogram':
+        [go.Histogram(x=df[i], name=i, opacity=.5) for i in df.columns],
         'Pie': [
             go.Pie(labels=df.index,
                    values=df[i],
@@ -124,11 +126,11 @@ def data_graph(
         'Heatmap': [go.Heatmap(x=df.index, y=df.columns, z=df.values)],
         'Box': [go.Box(y=df[i], name=i) for i in df.columns],
         # 'Contour': [go.Contour(x=df.index, y=df.columns, z=df.values)]
-        'Scatter3D': [
+        '3D Scatter': [
             go.Scatter3d(x=df.index, y=df.columns, z=df[i], name=i)
             for i in df.columns
         ],
-        'Surface3D': [
+        '3D Surface': [
             go.Surface(x=df.index,
                        y=df.columns,
                        z=df.values,
@@ -139,6 +141,7 @@ def data_graph(
                                                    highlightcolor="#42f462",
                                                    project=dict(z=True)))),
         ],
+        '2D Histogram': [go.Histogram2d(x=df.iloc[:, 0], y=df.iloc[:, 1])]
     }
 
     # チャートの種類でレイアウトを分岐
@@ -162,6 +165,12 @@ def data_graph(
                           hovermode='closest'),
         # other layout
         {
+            'Histogram':
+            go.Layout(title=title,
+                      xaxis={'title': 'Value'},
+                      yaxis={'title': 'Count'},
+                      barmode='overlay',
+                      hovermode='closest'),
             'Pie':
             go.Layout(title=go.layout.Title(text=title),
                       grid={

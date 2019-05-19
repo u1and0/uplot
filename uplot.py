@@ -18,6 +18,21 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
+CHART_LIST = [
+    'Line',
+    'Bar',
+    'Histogram',
+    'Pie',
+    'Polar',
+    'Box',
+    'Heatmap',
+    # 'Contour',
+    'Candlestick',
+    'Scatter3D',
+    'Surface3D',
+]
+CHART_LIST.sort()
+
 app.layout = html.Div(
     [
         # File upload bunner
@@ -42,10 +57,7 @@ app.layout = html.Div(
                      options=[{
                          'label': i,
                          'value': i
-                     } for i in [
-                         'Line', 'Bar', 'Histogram', 'Pie', 'Polar', 'Box',
-                         'Heatmap', 'Candlestick', '3DScatter', '3DSurface'
-                     ]],
+                     } for i in CHART_LIST],
                      value='Line'),
         html.H6('x-axis'),
         dcc.RadioItems(id='xaxis-type',
@@ -77,6 +89,14 @@ def data_graph(
 ):
     """アップロードされたデータのグラフを描画"""
 
+    basename = os.path.splitext(filename)[0]
+    # ファイル名の1つ目の'_'で区切って、グラフタイトルとY軸名に分ける
+    if '_' in basename:
+        title, yaxis_name = basename.split('_', 1)
+    # ファイル名に'_'がなければグラフタイトル、Y軸名ともにファイル名
+    else:
+        title, yaxis_name = basename, basename
+
     def args(i):
         """graph_objs helper func"""
         return {'x': df.index, 'y': df[i], 'name': i}
@@ -103,14 +123,23 @@ def data_graph(
         ],
         'Heatmap': [go.Heatmap(x=df.index, y=df.columns, z=df.values)],
         'Box': [go.Box(y=df[i], name=i) for i in df.columns],
+        # 'Contour': [go.Contour(x=df.index, y=df.columns, z=df.values)]
+        'Scatter3D': [
+            go.Scatter3d(x=df.index, y=df.columns, z=df[i], name=i)
+            for i in df.columns
+        ],
+        'Surface3D': [
+            go.Surface(x=df.index,
+                       y=df.columns,
+                       z=df.values,
+                       name=yaxis_name,
+                       contours=go.surface.Contours(
+                           z=go.surface.contours.Z(show=True,
+                                                   usecolormap=True,
+                                                   highlightcolor="#42f462",
+                                                   project=dict(z=True)))),
+        ],
     }
-    basename = os.path.splitext(filename)[0]
-    # ファイル名の1つ目の'_'で区切って、グラフタイトルとY軸名に分ける
-    if '_' in basename:
-        title, yaxis_name = basename.split('_', 1)
-    # ファイル名に'_'がなければグラフタイトル、Y軸名ともにファイル名
-    else:
-        title, yaxis_name = basename, basename
 
     # チャートの種類でレイアウトを分岐
     # 分岐にはdefaultdictを使い、デフォルトはlambda式で返す
@@ -127,7 +156,7 @@ def data_graph(
                               'title': yaxis_name,
                           },
                           margin={
-                              'l': 40,
+                              'l': 60,
                               'b': 50
                           },
                           hovermode='closest'),

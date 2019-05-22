@@ -1,21 +1,50 @@
 !_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
-!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
-!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
-!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
-!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
-!_TAG_PROGRAM_VERSION	0.0.0	/45968eff/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+030|	Session.vim	/^normal! 030|$/;"	m
+08|	Session.vim	/^normal! 08|$/;"	m
 CHART_LIST	uplot.py	/^CHART_LIST = [$/;"	v
+Input	uplot.py	/^from dash.dependencies import Input, Output, State$/;"	i
+Output	uplot.py	/^from dash.dependencies import Input, Output, State$/;"	i
+SessionLoad	Session.vim	/^let SessionLoad = 1$/;"	v
+State	uplot.py	/^from dash.dependencies import Input, Output, State$/;"	i
 app	uplot.py	/^app = dash.Dash(__name__, external_stylesheets=external_stylesheets)$/;"	v
-args	uplot.py	/^    def args(i):$/;"	f	function:data_graph	file:
-data_graph	uplot.py	/^def data_graph(df, filename, chart_type, xaxis_type, yaxis_type, data_slider):$/;"	f
-data_slider	uplot.py	/^def data_slider(df):$/;"	f
+args	uplot.py	/^    def args(i):$/;"	f	function:data_graph
+base64	uplot.py	/^import base64$/;"	i
+children	uplot.py	/^            children=html.Div(['Drag and Drop or ',$/;"	v
+dash	uplot.py	/^import dash$/;"	i
+dash_table	uplot.py	/^import dash_table$/;"	i
+data_graph	uplot.py	/^def data_graph($/;"	f
 data_table	uplot.py	/^def data_table(df):$/;"	f
-dcc	uplot.py	/^import dash_core_components as dcc$/;"	I
+datetime	uplot.py	/^import datetime$/;"	i
+dcc	uplot.py	/^import dash_core_components as dcc$/;"	i
+defaultdict	uplot.py	/^from collections import defaultdict$/;"	i
 external_stylesheets	uplot.py	/^external_stylesheets = ['https:\/\/codepen.io\/chriddyp\/pen\/bWLwgP.css']$/;"	v
-go	uplot.py	/^import plotly.graph_objs as go$/;"	I
-html	uplot.py	/^import dash_html_components as html$/;"	I
-np	uplot.py	/^import numpy as np$/;"	I
+g:this_obsession	Session.vim	/^let g:this_obsession = v:this_session$/;"	v
+g:this_obsession_status	Session.vim	/^let g:this_obsession_status = 2$/;"	v
+g:this_session	Session.vim	/^let g:this_session = v:this_session$/;"	v
+go	uplot.py	/^import plotly.graph_objs as go$/;"	i
+html	uplot.py	/^import dash_html_components as html$/;"	i
+id	uplot.py	/^            id='upload-data',$/;"	v
+io	uplot.py	/^import io$/;"	i
+labelStyle	uplot.py	/^                       labelStyle={'display': 'inline-block'}),$/;"	v
+multiple	uplot.py	/^            multiple=True),$/;"	v
+options	uplot.py	/^                       options=[{$/;"	v
+options	uplot.py	/^                     options=[{$/;"	v
+os	uplot.py	/^import os$/;"	i
 parse_contents	uplot.py	/^def parse_contents(contents, filename, date, chart_type, xaxis_type,$/;"	f
-pd	uplot.py	/^import pandas as pd$/;"	I
+pd	uplot.py	/^import pandas as pd$/;"	i
+plotly	uplot.py	/^import plotly.graph_objs as go$/;"	i
+s:l	Session.vim	/^let s:l = 1 - ((0 * winheight(0) + 26) \/ 52)$/;"	v
+s:l	Session.vim	/^let s:l = 204 - ((203 * winheight(0) + 26) \/ 52)$/;"	v
+s:so_save	Session.vim	/^let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0$/;"	v
+s:sx	Session.vim	/^let s:sx = expand("<sfile>:p:r")."x.vim"$/;"	v
+s:wipebuf	Session.vim	/^  let s:wipebuf = bufnr('%')$/;"	v
+style	uplot.py	/^            style={$/;"	v
 update_output	uplot.py	/^def update_output(list_of_contents, chart_type, xaxis_type, yaxis_type,$/;"	f
+value	uplot.py	/^                       value='linear',$/;"	v
+value	uplot.py	/^                     value='Line'),$/;"	v
+zt	Session.vim	/^normal! zt$/;"	m

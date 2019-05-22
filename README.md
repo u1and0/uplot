@@ -41,4 +41,3 @@ $ sudo docker run -d -p 8880:8880 u1and0/uplot
 ![pic5](https://raw.githubusercontent.com/u1and0/uplot/pic/Screenshot%20from%202019-05-22%2022-56-11.png)
 ![pic6](https://raw.githubusercontent.com/u1and0/uplot/pic/Screenshot%20from%202019-05-22%2022-56-24.png)
 ![pic7](https://raw.githubusercontent.com/u1and0/uplot/pic/Screenshot%20from%202019-05-22%2022-56-41.png)
-![pic8](https://raw.githubusercontent.com/u1and0/uplot/pic/Screenshot%20from%202019-05-22%2022-57-54.png)

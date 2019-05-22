@@ -34,18 +34,27 @@ csvまたはxlsファイルをブラウザ上のUpload欄に上げるだけで�
 
 
 # Install
-あとで
+
+## pip
+あとでpypi登録予定
+
+## Github
+[GitHub u1and0/uplot](https://github.com/u1and0/uplot)
+クローン後、`$ python uplot.py`
 
 
-# Dockerfile
+## Dockerhub
 [Dockerhub u1and0/uplot](https://hub.docker.com/r/u1and0/uplot)
 
 
-## USAGE
 ```sh
 $ sudo docker pull u1and0/uplot
 $ sudo docker run -d -p 8880:8880 u1and0/uplot
 ```
+
+# USAGE
+1. サーバーを立ち上げたらブラウザに`http//:localhost:8880`と打ち込みます。
+2. csvかxlsで作成したファイルをドラッグ・アンド・ドロップしてグラフ種類を選択します。
 
 
 # ScreenShots

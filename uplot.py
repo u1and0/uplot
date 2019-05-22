@@ -27,7 +27,7 @@ CHART_LIST = [
     'Box',
     'Heatmap',
     # 'Contour',
-    'Candlestick',
+    # 'Candlestick',
     '3D Scatter',
     '3D Surface',
     '2D Histogram',
@@ -252,4 +252,4 @@ def update_output(list_of_contents, chart_type, xaxis_type, yaxis_type,
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=8888)
+    app.run_server(debug=True, host='0.0.0.0', port=8880)

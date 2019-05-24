@@ -1,5 +1,5 @@
 # Just Upload & Plot. Easy visualize tool via http.
-UplodしてPlotするだけの簡単なhttp経由の可視化ツールです。
+UploadしてPlotするだけの簡単なhttp経由の可視化ツールです。
 
 csvまたはxlsファイルをブラウザ上のUpload欄に上げるだけでさまざまな形式のグラフを描きます。
 

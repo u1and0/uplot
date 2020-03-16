@@ -22,7 +22,6 @@ CHART_LIST = [
     'Line',
     'Bar',
     'Histogram',
-    'Pie',
     'Polar',
     'Box',
     'Heatmap',
@@ -30,7 +29,6 @@ CHART_LIST = [
     # 'Candlestick',
     '3D Scatter',
     '3D Surface',
-    '2D Histogram',
 ]
 CHART_LIST.sort()
 
@@ -109,13 +107,6 @@ def data_graph(
         'Bar': [go.Bar(args(i)) for i in df.columns],
         'Histogram':
         [go.Histogram(x=df[i], name=i, opacity=.5) for i in df.columns],
-        'Pie': [
-            go.Pie(labels=df.index,
-                   values=df[i],
-                   name=i,
-                   domain={'column': list(df.columns).index(i)})
-            for i in df.columns
-        ],
         'Polar': [
             go.Scatterpolar(
                 r=df[i],
@@ -141,7 +132,6 @@ def data_graph(
                                                    highlightcolor="#42f462",
                                                    project=dict(z=True)))),
         ],
-        '2D Histogram': [go.Histogram2d(x=df.iloc[:, 0], y=df.iloc[:, 1])]
     }
 
     # チャートの種類でレイアウトを分岐
@@ -166,18 +156,13 @@ def data_graph(
         # other layout
         {
             'Histogram':
-            go.Layout(title=title,
-                      xaxis={'title': 'Value'},
-                      yaxis={'title': 'Count'},
-                      barmode='overlay',
-                      hovermode='closest'),
-            'Pie':
-            go.Layout(title=go.layout.Title(text=title),
-                      grid={
-                          'columns': len(df.columns) - 1,
-                          'rows': 1
-                      },
-                      hovermode='closest')
+            go.Layout(
+                title=title,
+                xaxis={'title': 'Value'},
+                yaxis={'title': 'Count'},
+                barmode='overlay',
+            ),
+            # hovermode='closest'),
         })
     return dcc.Graph(id='the_graph',
                      figure={
